@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nx.mapper.TagMapper">
+
+    <resultMap id="BaseResultMap" type="com.nx.model.domain.Tag">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="tagName" column="tagName" jdbcType="VARCHAR"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="parentId" column="parentId" jdbcType="BIGINT"/>
+            <result property="isParent" column="isParent" jdbcType="TINYINT"/>
+            <result property="create_time" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="update_time" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted_flag" column="deleted_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,tagName,userId,
+        parentId,isParent,create_time,
+        update_time,deleted_flag
+    </sql>
+</mapper>

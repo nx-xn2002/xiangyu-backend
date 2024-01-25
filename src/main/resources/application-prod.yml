@@ -1,0 +1,10 @@
+#线上配置
+spring:
+  datasource:
+    username: **********
+    password: ***********
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/usercentral
+  session:
+    #失效时间一天
+    timeout: 86400
