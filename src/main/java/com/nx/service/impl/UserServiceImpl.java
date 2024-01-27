@@ -181,6 +181,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (CollectionUtils.isEmpty(tagList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        //内存查询
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(queryWrapper);
+        Gson gson = new Gson();
+        return userList.stream().filter(user -> {
+            if (StringUtils.isBlank(user.getTags())){
+                return false;
+            }
+            Set<String> tagNames = gson.fromJson(user.getTags(), new TypeToken<Set<String>>() {
+            }.getType());
+            for (String tag : tagList) {
+                if (!tagNames.contains(tag)) {
+                    return false;
+                }
+            }
+            return true;
+        }).map(this::getSafetyUser).collect(Collectors.toList());
+    }
+
+    /**
+     * @return {@link List }<{@link User }>
+     * @author nx
+     */
+    @Deprecated
+    private List<User> searchUsersByTagsBySQL(List<String> tagList) {
+        if (CollectionUtils.isEmpty(tagList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
         //sql查询
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -189,23 +217,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         List<User> userList = userMapper.selectList(queryWrapper);
         return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
-        //内存查询
-//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-//        List<User> userList = userMapper.selectList(queryWrapper);
-//        Gson gson = new Gson();
-//        return userList.stream().filter(user -> {
-//            if (StringUtils.isBlank(user.getTags())){
-//                return false;
-//            }
-//            Set<String> tagNames = gson.fromJson(user.getTags(), new TypeToken<Set<String>>() {
-//            }.getType());
-//            for (String tag : tagList) {
-//                if (!tagNames.contains(tag)) {
-//                    return false;
-//                }
-//            }
-//            return true;
-//        }).map(this::getSafetyUser).collect(Collectors.toList());
     }
 }
 
