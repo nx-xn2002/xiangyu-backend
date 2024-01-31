@@ -9,6 +9,9 @@ spring:
   session:
     #失效时间一天
     timeout: 86400
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 server:
   port: 8080
   servlet:

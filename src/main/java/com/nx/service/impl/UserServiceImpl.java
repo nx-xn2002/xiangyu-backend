@@ -3,31 +3,30 @@ package com.nx.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.nx.common.ErrorCode;
 import com.nx.exception.BusinessException;
+import com.nx.mapper.UserMapper;
 import com.nx.model.domain.User;
 import com.nx.service.UserService;
-import com.nx.mapper.UserMapper;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
-import java.util.Collections;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.nx.content.RegisterContent.*;
-import static com.nx.content.UserContent.*;
+import static com.nx.content.RegisterContent.SEVER_ERROR;
+import static com.nx.content.RegisterContent.WRONG_PASSWORD_LENGTH;
+import static com.nx.content.UserContent.DEFAULT_AVATAR;
+import static com.nx.content.UserContent.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现类

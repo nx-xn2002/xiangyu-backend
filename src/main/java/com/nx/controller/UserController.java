@@ -9,8 +9,8 @@ import com.nx.model.domain.User;
 import com.nx.model.domain.request.UserLoginRequest;
 import com.nx.model.domain.request.UserRegisterRequest;
 import com.nx.service.UserService;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
