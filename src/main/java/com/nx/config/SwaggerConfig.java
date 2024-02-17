@@ -38,13 +38,13 @@ public class SwaggerConfig {
                 //  可以用来自定义API的主标题
                 .title("响遇 XIANGYU - 学习伙伴匹配系统")
                 // 可以用来描述整体的API
-                .description("学习伙伴匹配系统接口文档")
+                .description("学习伙伴匹配系统-接口文档")
                 // 用于定义服务的域名
                 .termsOfServiceUrl("https://github.com/nx-xn2002")
                 //联系方式
                 .contact(new Contact("nx", "https://github.com/nx-xn2002", "nixiang_2002@163.com"))
                 // 可以用来定义版本
                 .version("1.0")
-                .build(); //
+                .build();
     }
 }
