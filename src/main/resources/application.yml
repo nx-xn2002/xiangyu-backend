@@ -1,6 +1,8 @@
 spring:
   application:
     name: xiangyu-backend
+  profiles:
+    active: dev
   datasource:
     username: root
     password: NXiang2002
