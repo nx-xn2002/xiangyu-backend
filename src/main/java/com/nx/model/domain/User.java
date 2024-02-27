@@ -1,13 +1,15 @@
 package com.nx.model.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
+import lombok.Data;
 
 /**
+ * 用户
+ *
  * @TableName user
  */
 @TableName(value = "user")
@@ -40,9 +42,9 @@ public class User implements Serializable {
     private Integer gender;
 
     /**
-     * 用户标签JSON
+     * 个人简介
      */
-    private String tags;
+    private String profile;
 
     /**
      * 密码
@@ -84,6 +86,11 @@ public class User implements Serializable {
      */
     @TableLogic
     private Integer deletedFlag;
+
+    /**
+     * 标签列表
+     */
+    private String tags;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

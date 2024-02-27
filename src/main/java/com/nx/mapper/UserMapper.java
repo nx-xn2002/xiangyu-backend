@@ -1,7 +1,7 @@
 package com.nx.mapper;
 
-import com.nx.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.nx.model.domain.User;
 
 /**
 * @author 18702

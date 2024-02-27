@@ -1,7 +1,8 @@
 package com.nx.service;
 
-import com.nx.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nx.model.domain.User;
+
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;

@@ -27,7 +27,7 @@ create table if not exists user
     username      varchar(256)                       null comment '用户昵称',
     avatar_url    varchar(1024)                      null comment '用户头像',
     gender        tinyint                            null comment '性别',
-    tags          varchar(1024)                      null comment '标签列表',
+    profile       varchar(512)                       null comment '个人简介',
     user_password varchar(512)                       not null comment '密码',
     phone         varchar(128)                       null comment '电话',
     email         varchar(512)                       null comment '邮箱',
@@ -35,7 +35,10 @@ create table if not exists user
     user_role     int      default 0                 null comment '用户角色 0-普通用户 1-管理员',
     create_time   datetime default (now())           null comment '创建时间',
     update_time   datetime default CURRENT_TIMESTAMP not null comment '更新时间',
-    deleted_flag  tinyint  default 0                 not null comment '删除状态 默认0'
+    deleted_flag  tinyint  default 0                 not null comment '删除状态 默认0',
+    tags          varchar(1024)                      null comment '标签列表'
 )
     comment '用户';
+
+
 
