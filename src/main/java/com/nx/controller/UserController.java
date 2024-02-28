@@ -9,15 +9,12 @@ import com.nx.model.domain.User;
 import com.nx.model.domain.request.UserLoginRequest;
 import com.nx.model.domain.request.UserRegisterRequest;
 import com.nx.service.UserService;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.xb.xsdschema.Attribute;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +26,7 @@ import static com.nx.content.UserContent.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://localhost:5173"})
 public class UserController {
     @Resource
     private UserService userService;
