@@ -38,7 +38,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 //  可以用来自定义API的主标题
-                .title("响遇 XIANGYU - 学习伙伴匹配系统")
+                .title("XIANGYU - 学习伙伴匹配系统")
                 // 可以用来描述整体的API
                 .description("学习伙伴匹配系统-接口文档")
                 // 用于定义服务的域名

@@ -9,9 +9,13 @@ import com.nx.model.domain.User;
 import com.nx.model.domain.request.UserLoginRequest;
 import com.nx.model.domain.request.UserRegisterRequest;
 import com.nx.service.UserService;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.impl.xb.xsdschema.Attribute;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -84,7 +88,17 @@ public class UserController {
         return ResultUtils.success(userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList()));
     }
 
+    @GetMapping("/search/tags")
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<User> userList = userService.searchUsersByTags(tagNameList);
+        return ResultUtils.success(userList);
+    }
+
     @GetMapping("/current")
+
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         if (currentUser == null) {
@@ -120,4 +134,5 @@ public class UserController {
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         return user != null && user.getUserRole() == ADMIN_ROLE;
     }
+
 }
