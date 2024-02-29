@@ -26,7 +26,7 @@ import static com.nx.content.UserContent.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:5173"}, allowCredentials = "true")
 public class UserController {
     @Resource
     private UserService userService;
@@ -75,7 +75,7 @@ public class UserController {
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
         //鉴权，仅管理员可查询
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -96,7 +96,6 @@ public class UserController {
     }
 
     @GetMapping("/current")
-
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         if (currentUser == null) {
@@ -108,10 +107,24 @@ public class UserController {
         return ResultUtils.success(user);
     }
 
+    @PostMapping("/update")
+    public BaseResponse<Boolean> updateUser(@RequestBody User user, HttpServletRequest request) {
+        //1.校验参数是否为空
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //2.校验权限
+        User loginUser = userService.getLoginUser(request);
+        //3.触发更新
+        Boolean result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
+    }
+
+
     @PostMapping("/delete")
-    public boolean searchUsers(@RequestBody Long id, HttpServletRequest request) {
+    public boolean deleteUser(@RequestBody Long id, HttpServletRequest request) {
         //鉴权，仅管理员可删除
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         if (id <= 0) {
@@ -121,16 +134,5 @@ public class UserController {
         return userService.removeById(id);
     }
 
-    /**
-     * 是否为管理员
-     *
-     * @param request
-     * @return boolean
-     * @author nx
-     */
-    private boolean isAdmin(HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        return user != null && user.getUserRole() == ADMIN_ROLE;
-    }
 
 }

@@ -25,8 +25,7 @@ import java.util.stream.Collectors;
 
 import static com.nx.content.RegisterContent.SEVER_ERROR;
 import static com.nx.content.RegisterContent.WRONG_PASSWORD_LENGTH;
-import static com.nx.content.UserContent.DEFAULT_AVATAR;
-import static com.nx.content.UserContent.USER_LOGIN_STATE;
+import static com.nx.content.UserContent.*;
 
 /**
  * 用户服务实现类
@@ -185,7 +184,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         List<User> userList = userMapper.selectList(queryWrapper);
         Gson gson = new Gson();
         return userList.stream().filter(user -> {
-            if (StringUtils.isBlank(user.getTags())){
+            if (StringUtils.isBlank(user.getTags())) {
                 return false;
             }
             Set<String> tagNames = gson.fromJson(user.getTags(), new TypeToken<Set<String>>() {
@@ -199,10 +198,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }).map(this::getSafetyUser).collect(Collectors.toList());
     }
 
-    /**
-     * @return {@link List }<{@link User }>
-     * @author nx
-     */
+    @Override
+    public Boolean updateUser(User user, User loginUser) {
+        Long userId = user.getId();
+        if (userId == null || userId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (!isAdmin(loginUser) && !userId.equals(loginUser.getId())) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        User oldUser = userMapper.selectById(userId);
+        if (oldUser == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR);
+        }
+        int i = userMapper.updateById(user);
+        return i > 0;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        Object userObject = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userObject == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return (User) userObject;
+    }
+
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return user != null && user.getUserRole() == ADMIN_ROLE;
+    }
+
+    @Override
+    public boolean isAdmin(User loginUser) {
+        return loginUser != null && loginUser.getUserRole() == ADMIN_ROLE;
+    }
+
     @Deprecated
     private List<User> searchUsersByTagsBySQL(List<String> tagList) {
         if (CollectionUtils.isEmpty(tagList)) {
