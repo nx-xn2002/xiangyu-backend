@@ -3,6 +3,7 @@ package com.nx;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -14,6 +15,7 @@ import java.util.Scanner;
  */
 @SpringBootApplication
 @MapperScan("com.nx.mapper")
+@EnableScheduling
 public class XiangYuBackend {
 
     public static void main(String[] args) {
