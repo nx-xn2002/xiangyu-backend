@@ -1,6 +1,7 @@
 package com.nx.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nx.common.BaseResponse;
 import com.nx.common.ErrorCode;
 import com.nx.common.ResultUtils;
@@ -84,6 +85,13 @@ public class UserController {
         }
         List<User> userList = userService.list(queryWrapper);
         return ResultUtils.success(userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/recommend")
+    public BaseResponse<Page<User>> recommendUsers(long pageSize, long pageNum, HttpServletRequest request) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Page<User> userPage = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        return ResultUtils.success(userPage);
     }
 
     @GetMapping("/search/tags")
