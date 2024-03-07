@@ -6,6 +6,8 @@ import com.nx.mapper.UserMapper;
 import com.nx.model.domain.User;
 import com.nx.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +30,8 @@ public class PreCacheJob {
     private UserService userService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
-
+    @Resource
+    private RedissonClient redissonClient;
     /**
      * 重点用户
      */
@@ -40,18 +43,32 @@ public class PreCacheJob {
      *
      * @author nx
      */
-    @Scheduled(cron = "0 58 23 * * *")
+    @Scheduled(cron = "0 43 0 * * *")
     public void doCacheRecommendUser() {
-        for (Long userId : mainUserList) {
-            ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-            String redisKey = String.format("xiangyu:user:recommend:%s", userId);
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            Page<User> userPage = userService.page(new Page<>(1, 20), queryWrapper);
-            //写入缓存
-            try {
-                valueOperations.set(redisKey, userPage, 23, TimeUnit.HOURS);
-            } catch (Exception e) {
-                log.error("redis set key error", e);
+        RLock lock = redissonClient.getLock("nx:precachejob:docache:lock");
+        try {
+            if (lock.tryLock(0, 30000L, TimeUnit.MILLISECONDS)) {
+                System.out.println("get lock");
+                for (Long userId : mainUserList) {
+                    ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+                    String redisKey = String.format("xiangyu:user:recommend:%s", userId);
+                    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+                    Page<User> userPage = userService.page(new Page<>(1, 20), queryWrapper);
+                    //写入缓存
+                    try {
+                        valueOperations.set(redisKey, userPage, 23, TimeUnit.HOURS);
+                    } catch (Exception e) {
+                        log.error("redis set key error", e);
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            log.error("InterruptedException e", e);
+        } finally {
+            //避免释放其他服务器加的锁
+            if (lock.isHeldByCurrentThread()) {
+                System.out.println("unlock");
+                lock.unlock();
             }
         }
     }
