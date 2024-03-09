@@ -1,4 +1,4 @@
-package com.nx.model.domain.request;
+package com.nx.model.request;
 
 import lombok.Data;
 

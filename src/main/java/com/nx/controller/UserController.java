@@ -7,8 +7,8 @@ import com.nx.common.ErrorCode;
 import com.nx.common.ResultUtils;
 import com.nx.exception.BusinessException;
 import com.nx.model.domain.User;
-import com.nx.model.domain.request.UserLoginRequest;
-import com.nx.model.domain.request.UserRegisterRequest;
+import com.nx.model.request.UserLoginRequest;
+import com.nx.model.request.UserRegisterRequest;
 import com.nx.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.nx.content.UserContent.ADMIN_ROLE;
 import static com.nx.content.UserContent.USER_LOGIN_STATE;
 
 /**
