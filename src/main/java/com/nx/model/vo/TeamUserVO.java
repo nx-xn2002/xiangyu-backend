@@ -1,24 +1,25 @@
-package com.nx.model.domain;
+package com.nx.model.vo;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
-/**
- * 队伍
- * @TableName team
- */
-@TableName(value ="team")
-@Data
-public class Team implements Serializable {
-    /**
-     * id
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
+/**
+ * 队伍用户信息封装类（脱敏）
+ *
+ * @author nx
+ */
+@Data
+public class TeamUserVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1936735903807617751L;
+    /**
+     * 队伍id
+     */
+    private Long id;
     /**
      * 队伍名称
      */
@@ -50,11 +51,6 @@ public class Team implements Serializable {
     private Integer status;
 
     /**
-     * 密码
-     */
-    private String password;
-
-    /**
      * 创建时间
      */
     private Date createTime;
@@ -65,11 +61,7 @@ public class Team implements Serializable {
     private Date updateTime;
 
     /**
-     * 删除状态 默认0
+     * 创建人用户信息
      */
-    @TableLogic
-    private Integer deletedFlag;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private UserVO createUser;
 }

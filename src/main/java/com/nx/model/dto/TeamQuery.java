@@ -1,18 +1,18 @@
 package com.nx.model.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.nx.common.PageRequest;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.util.Date;
 
 /**
  * 队伍查询封装类
  *
  * @author nx
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class TeamQuery extends PageRequest {
     @Serial
     private static final long serialVersionUID = 4311288095002581904L;
@@ -20,6 +20,10 @@ public class TeamQuery extends PageRequest {
      * id
      */
     private Long id;
+    /**
+     * 搜索关键词
+     */
+    private String searchText;
 
     /**
      * 队伍名称

@@ -9,9 +9,9 @@
             <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="teamId" column="team_id" jdbcType="BIGINT"/>
             <result property="joinTime" column="join_time" jdbcType="TIMESTAMP"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="deletedFlag" column="deletedFlag" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deletedFlag" column="deleted_flag" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

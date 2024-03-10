@@ -3,6 +3,12 @@ package com.nx.service;
 import com.nx.model.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nx.model.domain.User;
+import com.nx.model.dto.TeamQuery;
+import com.nx.model.request.TeamJoinRequest;
+import com.nx.model.request.TeamUpdateRequest;
+import com.nx.model.vo.TeamUserVO;
+
+import java.util.List;
 
 /**
  * @author 18702
@@ -19,4 +25,34 @@ public interface TeamService extends IService<Team> {
      * @author nx
      */
     long addTeam(Team team, User loginUser);
+
+    /**
+     * 搜索队伍
+     *
+     * @param teamQuery
+     * @return {@link List }<{@link TeamUserVO }>
+     * @author nx
+     */
+    List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin);
+
+
+    /**
+     * 更新队伍
+     *
+     * @param teamUpdateRequest team update request
+     * @param loginUser         login user
+     * @return boolean
+     * @author nx
+     */
+    boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User loginUser);
+
+    /**
+     * 加入队伍
+     *
+     * @param teamJoinRequest team join request
+     * @param loginUser       login user
+     * @return boolean
+     * @author nx
+     */
+    boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUser);
 }
