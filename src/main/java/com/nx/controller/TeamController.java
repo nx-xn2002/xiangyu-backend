@@ -9,9 +9,7 @@ import com.nx.exception.BusinessException;
 import com.nx.model.domain.Team;
 import com.nx.model.domain.User;
 import com.nx.model.dto.TeamQuery;
-import com.nx.model.request.TeamAddRequest;
-import com.nx.model.request.TeamJoinRequest;
-import com.nx.model.request.TeamUpdateRequest;
+import com.nx.model.request.*;
 import com.nx.model.vo.TeamUserVO;
 import com.nx.service.TeamService;
 import com.nx.service.UserService;
@@ -51,11 +49,13 @@ public class TeamController {
     }
 
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteTeam(@RequestBody long id) {
-        if (id <= 0) {
+    public BaseResponse<Boolean> deleteTeam(@RequestBody TeamDeleteRequest teamDeleteRequest, HttpServletRequest request) {
+        Long teamId = teamDeleteRequest.getId();
+        if (teamId == null || teamId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.removeById(id);
+        User loginUser = userService.getLoginUser(request);
+        boolean result = teamService.deleteTeam(teamId, loginUser);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除失败");
         }
@@ -117,6 +117,16 @@ public class TeamController {
         }
         User loginUser = userService.getLoginUser(request);
         boolean result = teamService.joinTeam(teamJoinRequest, loginUser);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/quit")
+    public BaseResponse<Boolean> quitTeam(@RequestBody TeamQuitRequest teamQuitRequest, HttpServletRequest request) {
+        if (teamQuitRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = teamService.quitTeam(teamQuitRequest, loginUser);
         return ResultUtils.success(result);
     }
 }
