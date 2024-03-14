@@ -8,7 +8,9 @@ import com.nx.common.ErrorCode;
 import com.nx.exception.BusinessException;
 import com.nx.mapper.UserMapper;
 import com.nx.model.domain.User;
+import com.nx.model.vo.UserVO;
 import com.nx.service.UserService;
+import com.nx.utils.AlgorithmUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -239,8 +240,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return loginUser != null && loginUser.getUserRole() == ADMIN_ROLE;
     }
 
+    @Override
+    public List<User> matchUsers(long num, User loginUser) {
+        List<User> userList = this.list();
+        String tags = loginUser.getTags();
+        Gson gson = new Gson();
+        List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
+        }.getType());
+        //用户列表的下标 => 相似度
+        SortedMap<Integer, Long> indexDistance = new TreeMap<>();
+        for (int i = 0; i < userList.size(); i++) {
+            String userTags = userList.get(i).getTags();
+            //无标签
+            if (StringUtils.isBlank(userTags)) {
+                continue;
+            }
+            List<String> tagListToCompare = gson.fromJson(userTags, new TypeToken<List<String>>() {
+            }.getType());
+            //计算分数
+            long distance = AlgorithmUtils.minDistance(tagList, tagListToCompare);
+            indexDistance.put(i, distance);
+        }
+        List<Integer> limit = indexDistance.keySet().stream().limit(num).toList();
+        return limit.stream().map(index -> getSafetyUser(userList.get(index))).toList();
+    }
+
     @Deprecated
-    private List<User> searchUsersByTagsBySQL(List<String> tagList) {
+    private List<User> searchUsersByTagsBySql(List<String> tagList) {
         if (CollectionUtils.isEmpty(tagList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

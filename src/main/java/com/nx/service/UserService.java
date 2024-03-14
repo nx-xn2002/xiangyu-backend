@@ -1,7 +1,9 @@
 package com.nx.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nx.common.BaseResponse;
 import com.nx.model.domain.User;
+import com.nx.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -94,9 +96,19 @@ public interface UserService extends IService<User> {
     /**
      * 检查是否是管理员
      *
-     * @param loginUser
+     * @param loginUser 当前登录的用户
      * @return boolean
      * @author nx
      */
     boolean isAdmin(User loginUser);
+
+    /**
+     * 获取最匹配的n个用户
+     *
+     * @param num       num
+     * @param loginUser login user
+     * @return {@link List }<{@link User }>
+     * @author nx
+     */
+    List<User> matchUsers(long num, User loginUser);
 }

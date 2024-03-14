@@ -9,6 +9,7 @@ import com.nx.exception.BusinessException;
 import com.nx.model.domain.User;
 import com.nx.model.request.UserLoginRequest;
 import com.nx.model.request.UserRegisterRequest;
+import com.nx.model.vo.UserVO;
 import com.nx.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -164,5 +165,20 @@ public class UserController {
         return userService.removeById(id);
     }
 
-
+    /**
+     * 获取最匹配的用户
+     *
+     * @param num     num
+     * @param request request
+     * @return {@link BaseResponse }<{@link List }<{@link User }>>
+     * @author nx
+     */
+    @GetMapping("/match")
+    public BaseResponse<List<User>> matchUsers(long num, HttpServletRequest request) {
+        if (num <= 0 || num > 20) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(userService.matchUsers(num, loginUser));
+    }
 }
