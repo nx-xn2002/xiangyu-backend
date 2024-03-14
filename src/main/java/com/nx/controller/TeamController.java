@@ -8,18 +8,23 @@ import com.nx.common.ResultUtils;
 import com.nx.exception.BusinessException;
 import com.nx.model.domain.Team;
 import com.nx.model.domain.User;
+import com.nx.model.domain.UserTeam;
 import com.nx.model.dto.TeamQuery;
 import com.nx.model.request.*;
 import com.nx.model.vo.TeamUserVO;
 import com.nx.service.TeamService;
 import com.nx.service.UserService;
+import com.nx.service.UserTeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 队伍接口
@@ -35,6 +40,8 @@ public class TeamController {
     private UserService userService;
     @Resource
     private TeamService teamService;
+    @Resource
+    private UserTeamService userTeamService;
 
     @PostMapping("/add")
     public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
@@ -128,5 +135,50 @@ public class TeamController {
         User loginUser = userService.getLoginUser(request);
         boolean result = teamService.quitTeam(teamQuitRequest, loginUser);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 获取我创建的队伍
+     *
+     * @param teamQuery team query
+     * @param request   request
+     * @return {@link BaseResponse }<{@link List }<{@link TeamUserVO }>>
+     * @author nx
+     */
+    @GetMapping("/list/my/create")
+    public BaseResponse<List<TeamUserVO>> listMyTeams(TeamQuery teamQuery, HttpServletRequest request) {
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean isAdmin = userService.isAdmin(request);
+        User loginUser = userService.getLoginUser(request);
+        teamQuery.setUserId(loginUser.getId());
+        List<TeamUserVO> list = teamService.listTeams(teamQuery, isAdmin);
+        return ResultUtils.success(list);
+    }
+
+    /**
+     * 获取我加入的队伍
+     *
+     * @param teamQuery team query
+     * @param request   request
+     * @return {@link BaseResponse }<{@link List }<{@link TeamUserVO }>>
+     * @author nx
+     */
+    @GetMapping("/list/my/join")
+    public BaseResponse<List<TeamUserVO>> listMyJoinTeams(TeamQuery teamQuery, HttpServletRequest request) {
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", loginUser.getId());
+        List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+        //取出不重复的队伍id
+        Map<Long, List<UserTeam>> listMap = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
+        ArrayList<Long> idList = new ArrayList<>(listMap.keySet());
+        teamQuery.setIdList(idList);
+        List<TeamUserVO> list = teamService.listTeams(teamQuery, true);
+        return ResultUtils.success(list);
     }
 }
