@@ -8,21 +8,25 @@ import com.nx.common.ErrorCode;
 import com.nx.exception.BusinessException;
 import com.nx.mapper.UserMapper;
 import com.nx.model.domain.User;
-import com.nx.model.vo.UserVO;
 import com.nx.service.UserService;
 import com.nx.utils.AlgorithmUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.nx.content.RegisterContent.SEVER_ERROR;
 import static com.nx.content.RegisterContent.WRONG_PASSWORD_LENGTH;
@@ -242,13 +246,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public List<User> matchUsers(long num, User loginUser) {
-        List<User> userList = this.list();
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.select("id", "tags");
+        userQueryWrapper.isNotNull("tags");
+        List<User> userList = this.list(userQueryWrapper);
         String tags = loginUser.getTags();
         Gson gson = new Gson();
         List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
         }.getType());
         //用户列表的下标 => 相似度
-        SortedMap<Integer, Long> indexDistance = new TreeMap<>();
+        List<Pair<User, Long>> list = new ArrayList<>();
         for (int i = 0; i < userList.size(); i++) {
             String userTags = userList.get(i).getTags();
             //无标签
@@ -259,10 +266,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }.getType());
             //计算分数
             long distance = AlgorithmUtils.minDistance(tagList, tagListToCompare);
-            indexDistance.put(i, distance);
+            list.add(new Pair<>(userList.get(i), distance));
         }
-        List<Integer> limit = indexDistance.keySet().stream().limit(num).toList();
-        return limit.stream().map(index -> getSafetyUser(userList.get(index))).toList();
+        List<Pair<User, Long>> topUserPairList = list.stream().sorted((a, b) -> (int) (a.getValue() - b.getValue())).limit(5).toList();
+        List<Long> userIdList = topUserPairList.stream().map(pair -> pair.getKey().getId()).toList();
+        userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("id", userIdList);
+        Map<Long, List<User>> userIdUserMap = this.list(userQueryWrapper).stream().map(this::getSafetyUser).collect(Collectors.groupingBy(User::getId));
+        ArrayList<User> finalUserList = new ArrayList<>();
+        for (Long id : userIdList) {
+            finalUserList.add(userIdUserMap.get(id).get(0));
+        }
+        return finalUserList;
     }
 
     @Deprecated
