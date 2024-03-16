@@ -47,7 +47,7 @@ public class PreCacheJob {
     public void doCacheRecommendUser() {
         RLock lock = redissonClient.getLock("nx:precachejob:docache:lock");
         try {
-            if (lock.tryLock(0, 30000L, TimeUnit.MILLISECONDS)) {
+            if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
                 System.out.println("get lock");
                 for (Long userId : mainUserList) {
                     ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
