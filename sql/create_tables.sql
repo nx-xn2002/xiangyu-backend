@@ -1,4 +1,5 @@
-create table if not exists tag
+-- auto-generated definition
+create table tag
 (
     id           bigint auto_increment
         primary key,
@@ -17,8 +18,26 @@ create table if not exists tag
 create index idx_userId
     on tag (userId);
 
+-- auto-generated definition
+create table team
+(
+    id           bigint auto_increment
+        primary key,
+    name         varchar(256)                       not null comment '队伍名称',
+    description  varchar(1024)                      null comment '描述',
+    max_num      int      default 1                 not null comment '最大人数',
+    expire_time  datetime                           null comment '过期时间',
+    user_id      bigint                             null comment '用户id',
+    status       int      default 0                 not null comment '队伍状态 0-公开 1-私有 2-加密',
+    password     varchar(512)                       null comment '密码',
+    create_time  datetime default (now())           null comment '创建时间',
+    update_time  datetime default CURRENT_TIMESTAMP not null comment '更新时间',
+    deleted_flag tinyint  default 0                 not null comment '删除状态 默认0'
+)
+    comment '队伍';
 
-create table if not exists user
+-- auto-generated definition
+create table user
 (
     id            bigint auto_increment
         primary key,
@@ -39,33 +58,17 @@ create table if not exists user
 )
     comment '用户';
 
-create table if not exists team
+-- auto-generated definition
+create table user_team
 (
     id           bigint auto_increment
         primary key,
-    name         varchar(256)                       not null comment '队伍名称',
-    description  varchar(1024)                      null comment '描述',
-    maxNum       int      default 1                 not null comment '最大人数',
-    expireTime   datetime                           null comment '过期时间',
-    userId       bigint comment '用户id',
-    status       int      default 0                 not null comment '队伍状态 0-公开 1-私有 2-加密',
-    password     varchar(512)                       null comment '密码',
+    user_id      bigint                             null comment '用户id',
+    team_id      bigint                             null comment '队伍id',
+    join_time    datetime                           null comment '加入时间',
     create_time  datetime default (now())           null comment '创建时间',
     update_time  datetime default CURRENT_TIMESTAMP not null comment '更新时间',
     deleted_flag tinyint  default 0                 not null comment '删除状态 默认0'
-)
-    comment '队伍';
-
-create table if not exists user_team
-(
-    id          bigint auto_increment
-        primary key,
-    userId      bigint comment '用户id',
-    teamId      bigint comment '队伍id',
-    joinTime    datetime                           null comment '加入时间',
-    createTime  datetime default (now())           null comment '创建时间',
-    updateTime  datetime default CURRENT_TIMESTAMP not null comment '更新时间',
-    deletedFlag tinyint  default 0                 not null comment '删除状态 默认0'
 )
     comment '用户 - 队伍表';
 
